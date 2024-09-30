@@ -1,4 +1,4 @@
-#!/home/enicarlos/Artigos/env/bin/python3
+#!/home/enicarlos/Documentos/Artigos-django/env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
