@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -6,7 +7,7 @@ import mimetypes
 import os
 from .forms import ArtigoForm, ConfirmacaoExclusaoForm
 from .models import Artigo
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 
 # Create your views here.
@@ -130,43 +131,49 @@ def excluir_artigo(request, artigo_id):
     # Redireciona para a página de lista de artigos após a exclusão
     return redirect('lista_artigos')  
 
+from django.shortcuts import render
+from .models import Artigo
+
 def busca_artigos(request):
-    query = request.GET.get('q', '')
     filtros = {
+        'criterio': request.GET.get('criterio', ''),
         'titulo': request.GET.get('titulo', ''),
-        'autor': request.GET.get('autor', ''),
+        'autores': request.GET.get('autores', ''),
         'revista': request.GET.get('revista', ''),
-        'palavra_chave': request.GET.get('palavra_chave', ''),
+        'palavras_chave': request.GET.get('palavras_chave', ''),
         'data': request.GET.get('data', ''),
-        'resumo': request.GET.get('resumo', '')
+        'resumo': request.GET.get('resumo', ''),
     }
+    ordenar_por = request.GET.get('ordenar_por', 'data')
+    pagina = request.GET.get('pagina', 1)
 
     artigos = Artigo.objects.all()
 
-    if filtros['titulo']:
+    # Filtrando os artigos baseado no critério selecionado
+    if filtros['criterio'] == 'titulo' and filtros['titulo']:
         artigos = artigos.filter(titulo__icontains=filtros['titulo'])
-    if filtros['autor']:
-        artigos = artigos.filter(autor__icontains=filtros['autor'])
-    if filtros['revista']:
+    elif filtros['criterio'] == 'autores' and filtros['autores']:
+        artigos = artigos.filter(autores__icontains=filtros['autores'])
+    elif filtros['criterio'] == 'revista' and filtros['revista']:
         artigos = artigos.filter(revista__icontains=filtros['revista'])
-    if filtros['palavra_chave']:
-        artigos = artigos.filter(palavras_chave__icontains=filtros['palavra_chave'])
-    if filtros['data']:
-        artigos = artigos.filter(data_publicacao__date=filtros['data'])
-    if filtros['resumo']:
+    elif filtros['criterio'] == 'palavras_chave' and filtros['palavras_chave']:
+        artigos = artigos.filter(palavras_chave__icontains=filtros['palavras_chave'])
+    elif filtros['criterio'] == 'data' and filtros['data']:
+        artigos = artigos.filter(data=filtros['data'])
+    elif filtros['criterio'] == 'resumo' and filtros['resumo']:
         artigos = artigos.filter(resumo__icontains=filtros['resumo'])
 
     # Ordenação
-    ordenar_por = request.GET.get('ordenar_por', 'data_publicacao')
     artigos = artigos.order_by(ordenar_por)
 
     # Paginação
-    pagina = request.GET.get('pagina', 1)
+    from django.core.paginator import Paginator
     paginator = Paginator(artigos, 10)  # 10 artigos por página
-    artigos_paginados = paginator.get_page(pagina)
+    artigos_pag = paginator.get_page(pagina)
 
-    return render(request, 'lista_artigos.html', {
-        'artigos': artigos_paginados,
+    context = {
         'filtros': filtros,
-        'ordenar_por': ordenar_por
-    })
+        'artigos': artigos_pag,
+        'ordenar_por': ordenar_por,
+    }
+    return render(request, 'lista_artigos.html', context)

@@ -60,6 +60,7 @@
         <p><strong>Data de criação:</strong> {{ artigo.data }}</p>
         <p><strong>Revista:</strong> {{ artigo.revista }}</p>
         <h1>{{ artigo.resumo }}</h1>
+        <p>Última modificação: {{ artigo.ultima_modificacao }}</p>
         <a href="{% url 'editar' artigo.id %}">Editar</a>
         <a href="{% url 'download_artigo' artigo.id %}" class="btn btn-outline-success">Download do Artigo</a>
         <a href="{% url 'excluir_artigo' artigo.id %}" onclick="return confirm('Você tem certeza que deseja excluir este arquivo?');">Excluir</a>    

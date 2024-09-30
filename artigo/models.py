@@ -11,6 +11,7 @@ class Artigo(models.Model):
     data = models.DateField(blank=True, null=True)
     revista = models.CharField(max_length=255)
     arquivo = models.FileField(upload_to='arquivos/', null=True, blank=True)
+    ultima_modificacao = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.titulo
