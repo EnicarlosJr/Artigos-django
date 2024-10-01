@@ -8,7 +8,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  
     path('artigo/', include('artigo.urls')),  # Inclui as URLs do app artigo
-    path('api/token/', obtain_auth_token, name='api_token_auth'),  # Gera tokens
+    path('api/token/', obtain_auth_token, name='api_token_auth'),
+    path('api/', include('api.urls')),  # Inclui as rotas da API
 ]
 
 # Adiciona suporte para servir arquivos de mídia no modo DEBUG

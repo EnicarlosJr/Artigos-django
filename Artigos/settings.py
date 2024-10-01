@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'artigo',
     'rest_framework',
     'rest_framework.authtoken',
+    'api',
 ]
 
 REST_FRAMEWORK = {
@@ -52,6 +53,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
